@@ -1,0 +1,35 @@
+# Ubuntu 22.04 LTS をベースにする
+FROM ubuntu:22.04
+
+# 必要なツールのインストール
+RUN apt update && apt install -y \
+    tar gzip unzip curl git python3 \
+    build-essential clang cmake ninja-build \
+    gdb lldb valgrind \
+    libicu-dev jq procps net-tools iproute2 \
+    x11-apps x11-utils x11-xserver-utils \
+    fonts-noto
+
+# .NET 8 SDK のインストール
+RUN curl -sSL https://dot.net/v1/dotnet-install.sh -o dotnet-install.sh && \
+    bash dotnet-install.sh --channel LTS && \
+    ln -s /root/.dotnet/dotnet /usr/bin/dotnet
+
+# C++ 最新バージョンのセットアップ（C++20 / C++23 もサポート）
+RUN apt install -y g++-12 && \
+    update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-12 100 && \
+    update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-12 100
+
+# CMake のセットアップ
+RUN apt install -y cmake && \
+    cmake --version
+
+# X11 の設定
+ENV DISPLAY=host.docker.internal:0
+RUN echo "export DISPLAY=host.docker.internal:0" >> /root/.bashrc
+
+# 開発用フォルダの作成
+WORKDIR /projects
+
+# コンテナ起動時のデフォルトコマンド
+CMD ["/bin/bash"]

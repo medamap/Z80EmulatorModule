@@ -1,0 +1,18 @@
+version: '3.8'
+
+services:
+  z80-dev:
+    build:
+      context: ./  # Dockerfile と同じディレクトリ
+      dockerfile: Dockerfile
+    container_name: z80-dev
+    tty: true
+    stdin_open: true
+    environment:
+      DISPLAY: "host.docker.internal:0"  # XServer の設定
+    volumes:
+      - ./tmp/.X11-unix:/tmp/.X11-unix:rw  # X11 GUI 用
+      - ./csharp:/projects/csharp  # C# プロジェクト用
+      - ./cpp:/projects/cpp  # C++ プロジェクト用
+      - ./docker:/projects/docker  # Docker関連ファイル
+    working_dir: /projects
