@@ -1,0 +1,45 @@
+### GPU 版 Dockerfile ###
+FROM nvidia/cuda:12.2.2-devel-ubuntu22.04
+
+# 必要なツールのインストール
+RUN apt update && apt install -y \
+    tar gzip unzip curl git python3 \
+    build-essential clang cmake ninja-build \
+    gdb lldb valgrind \
+    libicu-dev jq procps net-tools iproute2 \
+    x11-apps x11-utils x11-xserver-utils \
+    fonts-noto \
+    ocl-icd-opencl-dev clinfo
+
+# .NET 8 SDK のインストール
+RUN curl -sSL https://dot.net/v1/dotnet-install.sh -o dotnet-install.sh && \
+    bash dotnet-install.sh --channel LTS && \
+    ln -s /root/.dotnet/dotnet /usr/bin/dotnet
+
+# C++ 最新バージョンのセットアップ（C++20 / C++23 もサポート）
+RUN apt install -y g++-12 && \
+    update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-12 100 && \
+    update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-12 100
+
+# CMake のセットアップ
+RUN apt install -y cmake && \
+    cmake --version
+
+# NVIDIA Container Toolkit の設定
+RUN apt install -y nvidia-container-toolkit nvidia-container-runtime
+
+# nvidia-smi の動作確認（エラーを無視）
+RUN if command -v nvidia-smi > /dev/null 2>&1; then nvidia-smi; else echo "nvidia-smi not found, skipping"; fi
+
+# X11 の設定
+ENV DISPLAY=host.docker.internal:0
+RUN echo "export DISPLAY=host.docker.internal:0" >> /root/.bashrc
+
+# VSCode / Chrome のプロファイル保存フォルダの作成
+RUN mkdir -p /profiles/vscode /profiles/chrome
+
+# 開発用フォルダの作成
+WORKDIR /projects
+
+# コンテナ起動時のデフォルトコマンド
+CMD ["/bin/bash"]
