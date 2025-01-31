@@ -1,0 +1,61 @@
+# -------------------------------
+# C# / .NET 関連
+# -------------------------------
+bin/
+obj/
+*.dll
+*.exe
+*.pdb
+*.user
+*.suo
+*.vs/
+.vscode/
+.project
+.idea/
+*.csproj.user
+.DS_Store
+
+# NuGet パッケージ
+packages/
+*.nupkg
+project.lock.json
+
+# Rider / JetBrains IDE
+*.sln.iml
+
+# -------------------------------
+# C++ 関連
+# -------------------------------
+*.o
+*.obj
+*.so
+*.a
+*.lib
+*.exp
+*.pdb
+*.exe
+*.dll
+*.dylib
+*.class
+CMakeLists.txt.user
+CMakeCache.txt
+CMakeFiles/
+cmake_install.cmake
+Makefile
+build/
+dist/
+
+# -------------------------------
+# Docker 関連
+# -------------------------------
+docker/data/
+docker/tmp/
+*.tar
+*.log
+.env
+
+# -------------------------------
+# その他（OS依存ファイルなど）
+# -------------------------------
+Thumbs.db
+Desktop.ini
