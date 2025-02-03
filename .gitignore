@@ -59,3 +59,4 @@ docker/tmp/
 # -------------------------------
 Thumbs.db
 Desktop.ini
+docker/profiles

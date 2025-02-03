@@ -20,11 +20,16 @@ if "%~3"=="" (
     echo Error: Missing exec argument.
     goto show_help
 )
+if "%~4"=="" (
+    echo Error: Missing command after exec.
+    goto show_help
+)
 
 :: 引数の解析
 set "ARG1=%~1"
 set "ARG2=%~2"
 set "ARG3=%~3"
+set "ARG4=%~4"
 
 if /I "%ARG1%"=="architecture" (
     set "ARCH=%ARG2%"
@@ -34,7 +39,7 @@ if /I "%ARG1%"=="architecture" (
 )
 
 if /I "%ARG3%"=="exec" (
-    set "ACTION=%~4"
+    set "ACTION=%ARG4%"
 ) else (
     echo Error: Invalid third argument "%ARG3%".
     goto show_help
@@ -79,8 +84,8 @@ if /I "%ACTION%"=="down" (
     exit /b %ERRORLEVEL%
 )
 if /I "%ACTION%"=="shell" (
-    echo Running: docker-compose exec %SERVICE% bash
-    docker-compose exec %SERVICE% bash
+    echo Running: docker-compose exec -u develop %SERVICE% bash
+    docker-compose exec -u develop %SERVICE% bash
     exit /b %ERRORLEVEL%
 )
 

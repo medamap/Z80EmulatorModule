@@ -24,6 +24,33 @@ RUN apt install -y g++-12 && \
 RUN apt install -y cmake && \
     cmake --version
 
+# Google chrome のインストール
+RUN apt-get update && apt-get install -y wget gnupg \
+    && wget -qO- https://dl.google.com/linux/linux_signing_key.pub | gpg --dearmor > /usr/share/keyrings/google-chrome.gpg \
+    && echo "deb [signed-by=/usr/share/keyrings/google-chrome.gpg] http://dl.google.com/linux/chrome/deb/ stable main" | tee /etc/apt/sources.list.d/google-chrome.list \
+    && apt-get update && apt-get install -y google-chrome-stable
+
+# VSCode のインストール
+RUN apt-get update && apt-get install -y wget gpg \
+    && wget -qO- https://packages.microsoft.com/keys/microsoft.asc | gpg --dearmor > /usr/share/keyrings/packages.microsoft.gpg \
+    && echo "deb [signed-by=/usr/share/keyrings/packages.microsoft.gpg] https://packages.microsoft.com/repos/vscode stable main" | tee /etc/apt/sources.list.d/vscode.list \
+    && apt-get update && apt-get install -y code
+
+# 日本語フォントのインストール
+RUN curl -L -o /tmp/noto-cjk-fonts.zip https://noto-website-2.storage.googleapis.com/pkgs/NotoSansCJKjp-hinted.zip && \
+    mkdir -p /usr/share/fonts/noto-cjk && \
+    unzip /tmp/noto-cjk-fonts.zip -d /usr/share/fonts/noto-cjk && \
+    rm /tmp/noto-cjk-fonts.zip && \
+    fc-cache -f -v
+
+# dockerchrome.sh スクリプトをコピー
+COPY dockerchrome.sh /usr/local/bin/dockerchrome.sh
+RUN chmod +x /usr/local/bin/dockerchrome.sh
+
+# dockervscode.sh スクリプトをコピー
+COPY dockervscode.sh /usr/local/bin/dockervscode.sh
+RUN chmod +x /usr/local/bin/dockervscode.sh
+
 # X11 の設定
 ENV DISPLAY=host.docker.internal:0
 RUN echo "export DISPLAY=host.docker.internal:0" >> /root/.bashrc
@@ -31,8 +58,15 @@ RUN echo "export DISPLAY=host.docker.internal:0" >> /root/.bashrc
 # VSCode / Chrome のプロファイル保存フォルダの作成
 RUN mkdir -p /profiles/vscode /profiles/chrome
 
-# 開発用フォルダの作成
-WORKDIR /projects
+# develop ユーザーを作成
+RUN useradd -m -s /bin/bash develop && echo "develop:develop" | chpasswd
+
+# sudo グループに追加（必要なら sudo をインストール）
+RUN apt-get update && apt-get install -y sudo && usermod -aG sudo develop
+
+# develop ユーザーに切り替え
+USER develop
+WORKDIR /home/develop/projects
 
 # コンテナ起動時のデフォルトコマンド
 CMD ["/bin/bash"]

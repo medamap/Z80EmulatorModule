@@ -10,32 +10,54 @@ services:
     stdin_open: true
     environment:
       DISPLAY: "host.docker.internal:0"
+      LIBGL_ALWAYS_INDIRECT: 1
+      WSL_DXGI: 1
+      WSL2: 1
+      USE_GPU: ""
     volumes:
+      - /mnt/wslg:/mnt/wslg
       - ./tmp/.X11-unix:/tmp/.X11-unix:rw
-      - ./csharp:/projects/csharp
-      - ./cpp:/projects/cpp
-      - ./:/projects/docker
-      - ./profiles/vscode:/root/.config/Code
-      - ./profiles/chrome:/root/.config/google-chrome
-    working_dir: /projects
+      - ./csharp:/home/develop/projects/csharp
+      - ./cpp:/home/develop/projects/cpp
+      - ./:/home/develop/projects/docker
+      - ./profiles/vscode:/home/develop/.vscode
+      - ./profiles/code:/home/develop/.config/Code
+      - ./profiles/chrome:/home/develop/.config/google-chrome
+    working_dir: /home/develop/projects
 
   z80-gpu:
     build:
       context: ./
       dockerfile: Dockerfile.gpu
     container_name: z80-gpu
-    runtime: nvidia
     tty: true
     stdin_open: true
+    network_mode: 'host'
     environment:
       DISPLAY: "host.docker.internal:0"
-      NVIDIA_VISIBLE_DEVICES: all
-      NVIDIA_DRIVER_CAPABILITIES: compute,utility
+      LIBGL_ALWAYS_INDIRECT: 1
+      WSL_DXGI: 1
+      WSL2: 1
+      NVIDIA_VISIBLE_DEVICES: all  # GPU を渡す
+      NVIDIA_DRIVER_CAPABILITIES: graphics,compute,utility
+      DBUS_SESSION_BUS_ADDRESS: unix:path=/run/dbus/system_bus_socket
+      USE_GPU: "true"
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: all
+              capabilities: [gpu]
     volumes:
+      - /mnt/wslg:/mnt/wslg
+      - /run/dbus:/run/dbus
+      - /dev/dri:/dev/dri
       - ./tmp/.X11-unix:/tmp/.X11-unix:rw
-      - ./csharp:/projects/csharp
-      - ./cpp:/projects/cpp
-      - ./:/projects/docker
-      - ./profiles/vscode:/root/.config/Code
-      - ./profiles/chrome:/root/.config/google-chrome
-    working_dir: /projects
+      - ./csharp:/home/develop/projects/csharp
+      - ./cpp:/home/develop/projects/cpp
+      - ./:/home/develop/projects/docker
+      - ./profiles/vscode:/home/develop/.vscode
+      - ./profiles/code:/home/develop/.config/Code
+      - ./profiles/chrome:/home/develop/.config/google-chrome
+    working_dir: /home/develop/projects
