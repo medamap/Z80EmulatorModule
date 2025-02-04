@@ -17,8 +17,8 @@ services:
     volumes:
       - /mnt/wslg:/mnt/wslg
       - ./tmp/.X11-unix:/tmp/.X11-unix:rw
-      - ./csharp:/home/develop/projects/csharp
-      - ./cpp:/home/develop/projects/cpp
+      - ../csharp:/home/develop/projects/csharp
+      - ../cpp:/home/develop/projects/cpp
       - ./:/home/develop/projects/docker
       - ./profiles/vscode:/home/develop/.vscode
       - ./profiles/code:/home/develop/.config/Code
@@ -54,8 +54,8 @@ services:
       - /run/dbus:/run/dbus
       - /dev/dri:/dev/dri
       - ./tmp/.X11-unix:/tmp/.X11-unix:rw
-      - ./csharp:/home/develop/projects/csharp
-      - ./cpp:/home/develop/projects/cpp
+      - ../csharp:/home/develop/projects/csharp
+      - ../cpp:/home/develop/projects/cpp
       - ./:/home/develop/projects/docker
       - ./profiles/vscode:/home/develop/.vscode
       - ./profiles/code:/home/develop/.config/Code
